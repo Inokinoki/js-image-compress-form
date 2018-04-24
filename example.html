@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <title>Form Image Compressor Example</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Example Form Image Compressor Example</h3>
+                </div>
+                <div class="panel-body">
+                    <form method="POST" action="example.html" id="example-form">
+                        <div class="form-group">
+                            <label for="exampleInput1">Field 1</label>
+                            <input type="text" class="form-control" id="exampleInput1" placeholder="f1">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput2">Field 2</label>
+                            <input type="text" class="form-control" id="exampleInput2" placeholder="f2">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput3">Field 3</label>
+                            <input type="text" class="form-control" id="exampleInput3" placeholder="f3">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput4">File 1: single image file</label>
+                            <input type="file" id="exampleInput4" name="file1">
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput5">File 2: multiple image file</label>
+                            <input type="file" id="exampleInput5" name="file2" multiple>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInput6">File 3: multiple mix file</label>
+                            <input type="file" id="exampleInput6" name="file3" multiple>
+                        </div>
+                        <input class="btn btn-default" type="submit"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="ImageCompressForm.js"></script>
+        <script type="text/javascript">
+        function onSuccess(data, textStatus){
+            console.log(data);
+        }
+
+        function onError(data, textStatus){
+            console.log("Error");
+        }
+
+        function onSubmit(form){
+            if (form.formData){
+                if (form.formElement){
+                    form.formData = new FormData();
+                    // Show tip
+                    var submit_button = $("input[type=submit]")[0]
+                    if (submit_button) submit_button.after("Uploading...");
+                    // Copy all non-file input value
+                    var inputs = form.formElement.getElementsByTagName("input"); // HTMLCollection
+                    for(var i=0;i<inputs.length;i++){
+                        if (inputs[i].type){
+                            // Attach value according to the type
+                            switch(inputs[i].type.toLowerCase()){
+                                case "radio":
+                                    // Radio input
+                                    if (inputs[i].checked){
+                                        form.add(inputs[i].name, inputs[i].value);
+                                    }
+                                    break;
+                                case "text": case "password": case "hidden": case "number":
+                                    if (inputs[i].value){
+                                        form.add(inputs[i].name, inputs[i].value);
+                                    }
+                                    break;
+                                case "file":
+                                    if (form.needCompressedImageFile.indexOf(inputs[i].name) >= 0){
+                                        if (inputs[i].name && inputs[i].name in form.compressedImageFile){
+                                            for (var f=0; f<form.compressedImageFile[inputs[i].name].length; f++){
+                                                // For raw file, add it and regard the name
+                                                if (form.compressedImageFile[inputs[i].name][f] instanceof File) {
+                                                    form.add(inputs[i].name, form.compressedImageFile[inputs[i].name][f],
+                                                        f + "." + form.compressedImageFile[inputs[i].name][f].name);
+                                                    continue;
+                                                }
+                                                form.add(inputs[i].name, form.compressedImageFile[inputs[i].name][f],
+                                                    inputs[i].name + "." + f + ".jpg");
+                                            }
+                                        }
+                                    } else {
+                                        if (inputs[i].files[0]){
+                                            form.add(inputs[i].name, inputs[i].files[0]);
+                                        }
+                                    }
+                                    break;
+                                case "checkbox":
+                                    console.debug("[CHECKBOX]" + inputs[i].name + " " + inputs[i].value + " " + inputs[i].checked);
+                                    // Have to do something
+                                    break;
+                                default:
+                                    console.debug("[" + inputs[i].type + "] " + inputs[i].name + " " + inputs[i].value);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        var form;
+
+        window.onload = function(){
+            var formDom = document.getElementById("example-form");
+            form = new ImageCompressForm(formDom, true);
+
+            form.registerCompressImage(document.getElementById("exampleInput4"));
+            form.registerCompressImage(document.getElementById("exampleInput5"));
+            form.registerCompressImage(document.getElementById("exampleInput6"));
+
+            form.onSubmit = onSubmit;
+            form.onSuccess = onSuccess;
+            form.onError = onError;
+        }
+        </script>
+    </body>
+</html>
