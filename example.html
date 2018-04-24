@@ -53,14 +53,19 @@
         function onError(data, textStatus){
             console.log("Error");
         }
-
+        var hasBeenUpdated = new Boolean(false); // Add an Indicator to avoid duplicated "Uploading..."s
         function onSubmit(form){
             if (form.formData){
                 if (form.formElement){
                     form.formData = new FormData();
                     // Show tip
                     var submit_button = $("input[type=submit]")[0]
-                    if (submit_button) submit_button.after("Uploading...");
+                    if (submit_button){
+                        if(hasBeenUpdated == Boolean(false)){
+                            submit_button.after(" Uploading...");
+                            hasBeenUpdated = new Boolean(true);
+                        }
+                    }
                     // Copy all non-file input value
                     var inputs = form.formElement.getElementsByTagName("input"); // HTMLCollection
                     for(var i=0;i<inputs.length;i++){
