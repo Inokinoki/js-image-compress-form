@@ -206,7 +206,9 @@ ImageCompressForm.prototype = {
                     this.formData = new FormData();
                     // Show tip
                     var submit_button = $("input[type=submit]")[0]
-                    if (submit_button) submit_button.after("Uploading...");
+                    if (submit_button) {
+                        $("<p id='uploading'>Uploading...</p>").insertAfter(submit_button);
+                    }
                     // Copy all non-file input value
                     var inputs = this.formElement.getElementsByTagName("input"); // HTMLCollection
                     for(var i=0;i<inputs.length;i++) {
@@ -226,14 +228,14 @@ ImageCompressForm.prototype = {
                                     break;
                                 case "file":
                                     if (this.needCompressedImageFile.indexOf(inputs[i].name) >= 0) {
-                                        // For raw file, add it and regard the name
-                                        if (form.compressedImageFile[inputs[i].name][f] instanceof File) {
-                                            form.add(inputs[i].name, form.compressedImageFile[inputs[i].name][f],
-                                                f + "." + form.compressedImageFile[inputs[i].name][f].name);
-                                            continue;
-                                        }
                                         if (inputs[i].name && inputs[i].name in this.compressedImageFile) {
                                             for (var f=0; f<this.compressedImageFile[inputs[i].name].length; f++) {
+                                                // For raw file, add it and regard the name
+                                                if (form.compressedImageFile[inputs[i].name][f] instanceof File) {
+                                                    form.add(inputs[i].name, form.compressedImageFile[inputs[i].name][f],
+                                                        f + "." + form.compressedImageFile[inputs[i].name][f].name);
+                                                    continue;
+                                                }
                                                 this.add(inputs[i].name, this.compressedImageFile[inputs[i].name][f],
                                                     inputs[i].name + "." + f + ".jpg");
                                             }

@@ -47,10 +47,14 @@
         <script src="ImageCompressForm.js"></script>
         <script type="text/javascript">
         function onSuccess(data, textStatus){
+            var uploading_bar = $("#uploading");
+            if (uploading_bar) uploading_bar.remove();
             console.log(data);
         }
 
         function onError(data, textStatus){
+            var uploading_bar = $("#uploading");
+            if (uploading_bar) uploading_bar.remove();
             console.log("Error");
         }
         var hasBeenUpdated = new Boolean(false); // Add an Indicator to avoid duplicated "Uploading..."s
@@ -62,7 +66,7 @@
                     var submit_button = $("input[type=submit]")[0]
                     if (submit_button){
                         if(hasBeenUpdated == Boolean(false)){
-                            submit_button.after(" Uploading...");
+                            $("<p id='uploading'>Uploading...</p>").insertAfter(submit_button);
                             hasBeenUpdated = new Boolean(true);
                         }
                     }
@@ -127,7 +131,7 @@
             form.registerCompressImage(document.getElementById("exampleInput5"));
             form.registerCompressImage(document.getElementById("exampleInput6"));
 
-            form.onSubmit = onSubmit;
+            //form.onSubmit = onSubmit;
             form.onSuccess = onSuccess;
             form.onError = onError;
         }
